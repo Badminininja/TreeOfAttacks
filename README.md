@@ -1,6 +1,5 @@
 # Tree of Attacks (TAP): A Reproduction Study
 
-**CS222 Final Project, University of California, Riverside (Winter 2024)**
 Joseph Mangapit
 
 📄 **[Read the paper](TreeOfAttacksFinal/CS222_TAP_Paper.pdf)**
