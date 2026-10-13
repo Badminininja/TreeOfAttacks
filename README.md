@@ -1,13 +1,9 @@
 # Tree of Attacks (TAP): A Reproduction & Safety Study
 
-<<<<<<< HEAD
 A solo reproduction of a published LLM-safety method, built for a graduate
 course. I rebuilt the *Tree of Attacks with Pruning* red-teaming pipeline,
 ran it against an open target model, and tested how well the paper's headline
 claims actually hold up on a student's budget.
-=======
-Joseph Mangapit
->>>>>>> cefb0b683438cbffa79182bc30e98722bc13e759
 
 **CS222 — University of California, Riverside — Winter 2024**
 Joseph Mangapit · 📄 **[Full write-up (PDF)](TreeOfAttacksFinal/CS222_TAP_Paper.pdf)**
