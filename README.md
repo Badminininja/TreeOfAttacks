@@ -1,24 +1,40 @@
-# Tree of Attacks (TAP): A Reproduction Study
+# Tree of Attacks (TAP): A Reproduction & Safety Study
 
-**CS222 Final Project, University of California, Riverside (Winter 2024)**
-Joseph Mangapit
+A solo reproduction of a published LLM-safety method, built for a graduate
+course. I rebuilt the *Tree of Attacks with Pruning* red-teaming pipeline,
+ran it against an open target model, and tested how well the paper's headline
+claims actually hold up on a student's budget.
 
-📄 **[Read the paper](TreeOfAttacksFinal/CS222_TAP_Paper.pdf)**
+**CS222 — University of California, Riverside — Winter 2024**
+Joseph Mangapit · 📄 **[Full write-up (PDF)](TreeOfAttacksFinal/CS222_TAP_Paper.pdf)**
 
-## Overview
+*Tech stack: Python, Google Colab, Hugging Face Transformers, the OpenAI API,
+Weights & Biases.*
 
-This project reproduces and examines *Tree of Attacks with Pruning* (TAP), from
-[Tree of Attacks: Jailbreaking Black-Box LLMs Automatically](https://arxiv.org/abs/2312.02119)
-(Mehrotra et al., 2023). TAP is an automated red-teaming method. One language
-model iteratively proposes and refines test prompts against a target model, and
-a judge model scores the responses. Unpromising branches of the search tree are
-pruned along the way.
+## What I found
 
-Studying attacks like this is how model developers find and fix safety gaps.
-The aim here was to see how well the published results hold up on a
-student's budget and what the method actually costs to run.
+- **The "low-cost attack" framing didn't hold.** A single 25-prompt run took
+  ~2.5 hours and about a third of my monthly Colab compute budget. The original
+  paper presents TAP as cheap and easy; at my scale it was neither.
+- **A weak judge inflates the success rate.** Using GPT-3.5 as the evaluator, I
+  found cases scored as successful "jailbreaks" where the target model hadn't
+  actually complied. This suggests reported success numbers (mine *and* the
+  original paper's) depend heavily on how capable the judge model is.
+- **Reproduced result:** 11 of 25 prompts (44%) reached the maximum judge score
+  against Vicuna-7B — in the same ballpark as the paper, but see the caveat above.
 
-## Setup
+![Max judge score per prompt — most prompts land at the extremes (1 or 10), rarely in between](TreeOfAttacksFinal/MaxJudgeScores.png)
+
+## About the method
+
+TAP is an automated red-teaming technique (Mehrotra et al., 2023). One language
+model proposes and iteratively refines test prompts against a target model; a
+judge model scores each response; and unpromising branches of the search tree
+are pruned along the way. Techniques like this are how model developers surface
+and then close safety gaps. My goal was to reproduce it independently and
+pressure-test its cost and evaluation claims.
+
+## Experiment setup
 
 | Component | Choice |
 |---|---|
@@ -29,21 +45,17 @@ student's budget and what the method actually costs to run.
 | Prompts | 25 behaviors sampled from the AdvBench benchmark |
 | Hardware | Google Colab (A100 when available, otherwise V100) |
 
-I also tried Llama-2-7B-Chat as a target, but it ran out of GPU memory after a
-few iterations.
+I also tried Llama-2-7B-Chat as a target, but it exhausted GPU memory after a
+few iterations — itself a useful data point on the method's resource demands.
 
-## Results
+## Limitations & what I'd do differently
 
-- **11 of 25 prompts (44%)** reached the maximum judge score of 10 against
-  Vicuna-7B.
-- The 25-prompt run took about **2.5 hours** and roughly **a third of my Colab
-  compute units**. That runs against the original paper's framing of TAP as a
-  low-cost attack.
-- With GPT-3.5 as the judge, some responses were scored as successful even
-  though the target didn't really comply. A weaker judge inflates success
-  rates, which may also explain some of the original paper's results.
-
-![Max judge score per prompt](TreeOfAttacksFinal/MaxJudgeScores.png)
+- A stronger judge model (e.g. GPT-4) would give more trustworthy success
+  numbers; GPT-3.5 was what the budget allowed.
+- The run drew 25 prompts from the full AdvBench set rather than the authors'
+  curated 50-prompt subset, so results aren't a like-for-like comparison.
+- Single run per configuration — no averaging over seeds, so per-prompt
+  outcomes carry some noise.
 
 ## Repository contents
 
